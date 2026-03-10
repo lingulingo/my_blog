@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+:root {
+  --color-background: #f6f3eb;
+  --color-foreground: #18202b;
+  --color-ink: #18202b;
+  --color-panel: rgba(255, 255, 255, 0.72);
+  --color-panel-strong: rgba(255, 255, 255, 0.88);
+  --color-panel-soft: rgba(255, 255, 255, 0.56);
+  --color-cream: #211a12;
+  --color-muted: #5f6879;
+  --color-gold: #d4b16a;
+  --color-line: rgba(24, 32, 43, 0.12);
+  --page-glow:
+    radial-gradient(circle at top, rgba(212, 177, 106, 0.18), transparent 24%),
+    radial-gradient(circle at 80% 18%, rgba(143, 164, 194, 0.22), transparent 22%);
+  --hero-surface: radial-gradient(circle at top, rgba(212, 177, 106, 0.16), transparent 42%), linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(237, 232, 222, 0.9));
+  --header-bg: rgba(246, 243, 235, 0.72);
+  --header-border: rgba(24, 32, 43, 0.08);
+  --button-ghost: rgba(24, 32, 43, 0.04);
+}
+
+.dark {
+  --color-background: #09111b;
+  --color-foreground: #ffffff;
+  --color-ink: #09111b;
+  --color-panel: rgba(15, 18, 27, 0.82);
+  --color-panel-strong: rgba(15, 18, 27, 0.9);
+  --color-panel-soft: rgba(255, 255, 255, 0.03);
+  --color-cream: #f4ecdb;
+  --color-muted: #a9b3c7;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --page-glow:
+    radial-gradient(circle at top, rgba(212, 177, 106, 0.12), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(61, 98, 146, 0.18), transparent 25%);
+  --hero-surface: radial-gradient(circle at top, rgba(212, 177, 106, 0.28), transparent 45%), linear-gradient(135deg, rgba(11, 17, 27, 0.98), rgba(24, 38, 62, 0.94));
+  --header-bg: rgba(10, 14, 22, 0.75);
+  --header-border: rgba(255, 255, 255, 0.08);
+  --button-ghost: rgba(255, 255, 255, 0.03);
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --font-sans: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display), serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.editor-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--color-line);
+  background: var(--button-ghost);
+  padding: 0.6rem;
+  color: var(--color-muted);
+  transition: all 0.2s ease;
+}
+
+.editor-toolbar-btn:hover {
+  border-color: rgba(212, 177, 106, 0.6);
+  color: var(--color-foreground);
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose blockquote {
+  border-left: 3px solid rgba(212, 177, 106, 0.5);
+  padding-left: 1rem;
+  color: var(--color-cream);
+}
+
+.article-prose,
+.editor-content {
+  color: var(--color-foreground);
+}
+
+.article-prose h1,
+.article-prose h2,
+.article-prose h3,
+.article-prose h4,
+.article-prose h5,
+.article-prose h6,
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6 {
+  color: var(--color-cream);
+}
+
+.article-prose p,
+.article-prose li,
+.article-prose blockquote,
+.editor-content p,
+.editor-content li,
+.editor-content blockquote {
+  color: var(--color-muted);
+  line-height: 1.9;
+}
+
+.article-prose strong,
+.editor-content strong {
+  color: var(--color-foreground);
+}
+
+.article-prose a,
+.editor-content a {
+  color: var(--color-gold);
+}
+
+.article-prose ul,
+.editor-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.article-prose ol,
+.editor-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  color: color-mix(in srgb, var(--color-muted) 70%, transparent);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.panel-surface {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(18px);
+}
+
+.panel-soft {
+  background: var(--color-panel-soft);
+  border: 1px solid var(--color-line);
+}
+
+.hero-surface {
+  background: var(--hero-surface);
+}
