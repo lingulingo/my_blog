@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ImagePlus } from "lucide-react";
 
 import { RichTextEditor } from "@/components/editor/rich-text-editor";
+import { resolveMediaUrl } from "@/lib/utils";
 
 type EditorFormProps = {
   post?: {
@@ -33,6 +34,7 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
   const [coverImage, setCoverImage] = useState(post?.coverImage || "");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const coverImageSrc = resolveMediaUrl(coverImage);
 
   const upload = async (file: File) => {
     const formData = new FormData();
@@ -131,7 +133,7 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
             </label>
             {coverImage ? (
               <div className="overflow-hidden rounded-[1.25rem]" style={{ border: "1px solid var(--color-line)" }}>
-                <Image src={coverImage} alt="cover" width={800} height={320} unoptimized className="h-44 w-full object-cover" />
+                <Image src={coverImageSrc} alt="cover" width={800} height={320} unoptimized className="h-44 w-full object-cover" />
               </div>
             ) : null}
           </div>

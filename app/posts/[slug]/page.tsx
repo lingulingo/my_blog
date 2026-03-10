@@ -10,7 +10,7 @@ import { CommentSection } from "@/components/comment-section";
 import { PostVisitTracker } from "@/components/post-visit-tracker";
 import { ReactionButton } from "@/components/reaction-button";
 import { prisma } from "@/lib/prisma";
-import { absoluteUrl, formatDate, getHeatScore, siteName, tagList } from "@/lib/utils";
+import { absoluteUrl, formatDate, getHeatScore, resolveMediaUrl, siteName, tagList } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -27,6 +27,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "文章不存在" };
   }
 
+  const coverImageUrl = resolveMediaUrl(post.coverImage);
+
   return {
     title: post.title,
     description: post.excerpt,
@@ -37,10 +39,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: absoluteUrl(`/posts/${post.slug}`),
       type: "article",
       siteName: siteName(),
-      images: post.coverImage ? [{ url: absoluteUrl(post.coverImage) }] : undefined,
+      images: coverImageUrl ? [{ url: absoluteUrl(coverImageUrl) }] : undefined,
     },
     twitter: {
-      card: post.coverImage ? "summary_large_image" : "summary",
+      card: coverImageUrl ? "summary_large_image" : "summary",
       title: post.title,
       description: post.excerpt,
     },
@@ -69,6 +71,7 @@ export default async function PostDetailPage({ params }: PageProps) {
   const liked = session?.user?.id
     ? post.reactions.some((reaction) => reaction.userId === session.user.id)
     : false;
+  const coverImageUrl = resolveMediaUrl(post.coverImage);
 
   return (
     <div className="space-y-8">
@@ -77,8 +80,8 @@ export default async function PostDetailPage({ params }: PageProps) {
         <div
           className="h-80 w-full bg-cover bg-center"
           style={{
-            backgroundImage: post.coverImage
-              ? `linear-gradient(180deg, rgba(7,10,17,0.2), rgba(7,10,17,0.88)), url(${post.coverImage})`
+            backgroundImage: coverImageUrl
+              ? `linear-gradient(180deg, rgba(7,10,17,0.2), rgba(7,10,17,0.88)), url(${coverImageUrl})`
               : "linear-gradient(135deg, rgba(212,177,106,0.22), rgba(46,74,109,0.7))",
           }}
         />

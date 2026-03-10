@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
+import { resolveMediaUrl } from "@/lib/utils";
 
 const credentialSchema = z.object({
   email: z.string().email(),
@@ -44,7 +45,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
-          image: user.avatar,
+          image: resolveMediaUrl(user.avatar),
           role: user.role,
         };
       },

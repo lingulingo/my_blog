@@ -50,6 +50,18 @@ export function absoluteUrl(path = "") {
   return `${siteUrl().replace(/\/$/, "")}${path}`;
 }
 
+export function resolveMediaUrl(path?: string | null) {
+  if (!path) {
+    return "";
+  }
+
+  if (path.startsWith("/uploads/")) {
+    return `/api${path}`;
+  }
+
+  return path;
+}
+
 export function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

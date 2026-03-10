@@ -10,7 +10,8 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:push:mysql": "prisma db push --schema prisma/schema.mysql.prisma",
-    "db:generate:mysql": "prisma generate --schema prisma/schema.mysql.prisma"
+    "db:generate:mysql": "prisma generate --schema prisma/schema.mysql.prisma",
+    "db:migrate:sqlite-to-mysql": "node scripts/migrate-sqlite-to-mysql.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -27,6 +28,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.35.1",
     "lucide-react": "^0.577.0",
+    "mysql2": "^3.19.1",
     "nanoid": "^5.1.6",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
@@ -38,12 +40,14 @@
     "react-hook-form": "^7.71.2",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "sharp": "^0.34.5",
     "slugify": "^1.6.6",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

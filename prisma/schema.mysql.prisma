@@ -34,6 +34,7 @@ model User {
   posts        Post[]
   comments     Comment[]
   reactions    Reaction[]
+  passwordResetTokens PasswordResetToken[]
   visits       Visit[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -120,4 +121,15 @@ model FriendLink {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
 }

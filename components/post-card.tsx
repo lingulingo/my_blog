@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Flame, Heart, Eye } from "lucide-react";
 
-import { formatDate, getHeatScore, tagList } from "@/lib/utils";
+import { formatDate, getHeatScore, resolveMediaUrl, tagList } from "@/lib/utils";
 
 type PostCardProps = {
   post: {
@@ -19,13 +19,15 @@ type PostCardProps = {
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const coverImageUrl = resolveMediaUrl(post.coverImage);
+
   return (
     <article className="panel-surface group overflow-hidden rounded-[1.75rem] transition duration-300 hover:shadow-xl hover:shadow-black/10" style={{ borderColor: "var(--color-line)" }}>
       <div
         className="h-52 w-full bg-cover bg-center"
         style={{
-          backgroundImage: post.coverImage
-            ? `linear-gradient(180deg, rgba(12,14,22,0.15), rgba(12,14,22,0.85)), url(${post.coverImage})`
+          backgroundImage: coverImageUrl
+            ? `linear-gradient(180deg, rgba(12,14,22,0.15), rgba(12,14,22,0.85)), url(${coverImageUrl})`
             : "linear-gradient(135deg, rgba(212,177,106,0.2), rgba(46,74,109,0.7))",
         }}
       />
