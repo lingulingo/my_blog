@@ -67,8 +67,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--color-muted)]">{category.description || "这个分类下的文章会聚合展示在这里。"}</p>
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
+        {posts.map((post, index) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            serialNumber={(currentPage - 1) * pageSize + index + 1}
+          />
         ))}
       </div>
       <Pagination currentPage={currentPage} totalPages={totalPages} makeHref={(nextPage) => `/categories/${category.slug}?page=${nextPage}`} />

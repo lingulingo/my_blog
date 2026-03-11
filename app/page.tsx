@@ -65,8 +65,8 @@ export default async function Home({ searchParams }: HomeProps) {
           </Link>
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
-          {featuredPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
+          {featuredPosts.map((post, index) => (
+            <PostCard key={post.id} post={post} serialNumber={index + 1} />
           ))}
         </div>
       </section>
@@ -78,8 +78,8 @@ export default async function Home({ searchParams }: HomeProps) {
             <h2 className="mt-2 text-4xl text-[var(--color-cream)]">最新发布</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-2">
-            {latestPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+            {latestPosts.map((post, index) => (
+              <PostCard key={post.id} post={post} serialNumber={index + 1} />
             ))}
           </div>
         </div>

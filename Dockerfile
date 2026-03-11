@@ -3,8 +3,9 @@ WORKDIR /app
 ARG PRISMA_SCHEMA=prisma/schema.prisma
 ENV PRISMA_SCHEMA=${PRISMA_SCHEMA}
 
+COPY package.json package-lock.json ./
+RUN npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
 COPY . .
-RUN if [ ! -d node_modules ]; then npm ci --registry=https://registry.npmjs.org --no-audit --no-fund; fi
 RUN npx prisma generate --schema "$PRISMA_SCHEMA" && npm run build
 
 EXPOSE 3000

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { HighlightText } from "@/components/highlight-text";
 import { Pagination } from "@/components/pagination";
+import { PostCard } from "@/components/post-card";
 import { PopularPostsList } from "@/components/popular-posts-list";
 import { prisma } from "@/lib/prisma";
 import { getPopularPosts, type PopularPeriod } from "@/lib/queries";
@@ -127,29 +128,13 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         <div className="space-y-6">
           {q ? <p className="text-sm text-[var(--color-muted)]">搜索结果：<HighlightText text={q} query={q} /></p> : null}
           <div className="grid gap-6 lg:grid-cols-2">
-            {posts.map((post) => (
-              <article key={post.id} className="panel-surface rounded-[1.75rem] p-1">
-                <div className="p-5">
-                  <p className="text-sm text-[var(--color-muted)]">
-                    {post.category?.name || "未分类"} · {post.author.name}
-                  </p>
-                  <h3 className="mt-3 text-2xl font-semibold text-[var(--color-cream)]">
-                    <Link href={`/posts/${post.slug}`}>
-                      <HighlightText text={post.title} query={q} />
-                    </Link>
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--color-muted)]">
-                    <HighlightText text={post.excerpt} query={q} />
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {post.tags.split(",").map((tag) => (
-                      <span key={tag} className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.2em] text-[var(--color-gold)]" style={{ background: "var(--color-panel-soft)", border: "1px solid var(--color-line)" }}>
-                        <HighlightText text={tag.trim()} query={q} />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </article>
+            {posts.map((post, index) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                serialNumber={(currentPage - 1) * pageSize + index + 1}
+                highlightQuery={q}
+              />
             ))}
           </div>
         </div>

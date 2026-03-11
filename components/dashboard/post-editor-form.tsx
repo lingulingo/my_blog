@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ImagePlus } from "lucide-react";
 
 import { RichTextEditor } from "@/components/editor/rich-text-editor";
+import { convertRichClipboardToMarkdown } from "@/lib/markdown-paste";
 import { resolveMediaUrl } from "@/lib/utils";
 
 type EditorFormProps = {
@@ -34,7 +35,26 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
   const [coverImage, setCoverImage] = useState(post?.coverImage || "");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [pasteMessage, setPasteMessage] = useState("");
   const coverImageSrc = resolveMediaUrl(coverImage);
+  const markdownTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const getClipboardImageFiles = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const filesFromFiles = Array.from(event.clipboardData.files || []);
+    const filesFromItems = Array.from(event.clipboardData.items || [])
+      .filter((item) => item.kind === "file" && item.type.startsWith("image/"))
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => Boolean(file));
+
+    const merged = [...filesFromFiles];
+    for (const file of filesFromItems) {
+      if (!merged.some((existing) => existing.name === file.name && existing.size === file.size && existing.type === file.type)) {
+        merged.push(file);
+      }
+    }
+
+    return merged;
+  };
 
   const upload = async (file: File) => {
     const formData = new FormData();
@@ -48,6 +68,81 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
 
     const body = (await response.json()) as { url: string };
     return body.url;
+  };
+
+  const importRemoteImage = async (url: string) => {
+    const response = await fetch("/api/upload-from-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, kind: "posts" }),
+    });
+    if (!response.ok) {
+      throw new Error("远程图片导入失败");
+    }
+
+    const body = (await response.json()) as { url: string };
+    return body.url;
+  };
+
+  const insertTextAtCursor = (text: string) => {
+    const textarea = markdownTextareaRef.current;
+    if (!textarea) {
+      setContent((previous) => `${previous}${previous ? "\n\n" : ""}${text}`.trim());
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const nextValue = `${content.slice(0, start)}${text}${content.slice(end)}`;
+    setContent(nextValue);
+
+    requestAnimationFrame(() => {
+      const nextCursor = start + text.length;
+      textarea.focus();
+      textarea.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
+
+  const handleMarkdownPaste = async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const html = event.clipboardData.getData("text/html");
+    const plainText = event.clipboardData.getData("text/plain");
+    const files = getClipboardImageFiles(event);
+
+    const hasRichContent = Boolean(html.trim()) || files.some((file) => file.type.startsWith("image/"));
+    if (!hasRichContent) {
+      return;
+    }
+
+    event.preventDefault();
+    setPasteMessage("正在处理飞书内容...");
+
+    try {
+      const markdown = await convertRichClipboardToMarkdown({
+        html,
+        plainText,
+        files,
+        uploadFile: upload,
+        importRemoteImage,
+      });
+
+      if (!markdown) {
+        setPasteMessage("粘贴内容为空");
+        return;
+      }
+
+      const wrapped = content && !content.endsWith("\n") ? `\n\n${markdown}` : markdown;
+      insertTextAtCursor(wrapped);
+      setPasteMessage("已转换为 Markdown");
+    } catch (error) {
+      console.error("转换飞书粘贴内容失败", error);
+      if (plainText.trim()) {
+        const wrapped = content && !content.endsWith("\n") ? `\n\n${plainText}` : plainText;
+        insertTextAtCursor(wrapped);
+        setPasteMessage("富文本转换失败，已退回为纯文本粘贴");
+      } else {
+        setPasteMessage("粘贴失败，请重试");
+      }
+    }
   };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -133,7 +228,15 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
             </label>
             {coverImage ? (
               <div className="overflow-hidden rounded-[1.25rem]" style={{ border: "1px solid var(--color-line)" }}>
-                <Image src={coverImageSrc} alt="cover" width={800} height={320} unoptimized className="h-44 w-full object-cover" />
+                <Image
+                  src={coverImageSrc}
+                  alt="cover"
+                  width={800}
+                  height={320}
+                  quality={92}
+                  sizes="(max-width: 1024px) 100vw, 800px"
+                  className="h-52 w-full object-cover"
+                />
               </div>
             ) : null}
           </div>
@@ -172,12 +275,17 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
         ) : (
           <div className="panel-surface rounded-[1.75rem] p-4">
             <textarea
+              ref={markdownTextareaRef}
               value={content}
               onChange={(event) => setContent(event.target.value)}
+              onPaste={(event) => {
+                void handleMarkdownPaste(event);
+              }}
               placeholder="# 在这里写 Markdown\n\n支持标题、列表、代码块、表格、链接等常用格式。"
               className="min-h-[420px] w-full rounded-[1.25rem] px-5 py-4 font-mono text-sm outline-none"
               style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)", color: "var(--color-foreground)" }}
             />
+            {pasteMessage ? <p className="mt-3 text-sm text-[var(--color-muted)]">{pasteMessage}</p> : null}
           </div>
         )}
       </div>

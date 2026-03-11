@@ -1,0 +1,9 @@
+node_modules
+.git
+.gitignore
+.idea
+.DS_Store
+npm-debug.log*
+public/uploads
+prisma/*.db
+prisma/*.db-*

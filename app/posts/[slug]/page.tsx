@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Eye, Flame, PenSquare } from "lucide-react";
@@ -77,14 +78,29 @@ export default async function PostDetailPage({ params }: PageProps) {
     <div className="space-y-8">
       <PostVisitTracker postId={post.id} path={`/posts/${post.slug}`} />
       <article className="panel-surface overflow-hidden rounded-[2rem]">
-        <div
-          className="h-80 w-full bg-cover bg-center"
-          style={{
-            backgroundImage: coverImageUrl
-              ? `linear-gradient(180deg, rgba(7,10,17,0.2), rgba(7,10,17,0.88)), url(${coverImageUrl})`
-              : "linear-gradient(135deg, rgba(212,177,106,0.22), rgba(46,74,109,0.7))",
-          }}
-        />
+        <div className="relative h-80 w-full overflow-hidden" style={{ background: "var(--color-panel-soft)" }}>
+          {coverImageUrl ? (
+            <>
+              <Image
+                src={coverImageUrl}
+                alt={post.title}
+                fill
+                priority
+                quality={92}
+                sizes="100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
+            </>
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: "linear-gradient(135deg, rgba(212,177,106,0.22), rgba(46,74,109,0.7))",
+              }}
+            />
+          )}
+        </div>
         <div className="space-y-6 p-6 sm:p-8 lg:p-10">
           <div className="flex flex-wrap gap-2">
             {post.category ? (
