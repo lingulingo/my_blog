@@ -50,7 +50,10 @@ export async function SiteHeader() {
           )}
         </nav>
       </div>
-      <div className="pointer-events-auto absolute right-4 top-3 hidden lg:block xl:right-8">
+      <div
+        className="pointer-events-auto absolute right-4 z-30 hidden xl:block xl:right-8"
+        style={{ top: "calc(100% + 12px)" }}
+      >
         <WeatherClock />
       </div>
     </header>
