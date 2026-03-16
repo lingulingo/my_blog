@@ -49,7 +49,16 @@ export function PostCard({ post, serialNumber, highlightQuery = "" }: PostCardPr
           />
         )}
         {typeof serialNumber === "number" ? (
-          <div className="absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold tracking-[0.22em] text-[var(--color-cream)]" style={{ background: "rgba(11,14,22,0.72)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(10px)" }}>
+          <div
+            className="absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold tracking-[0.22em]"
+            style={{
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.24)",
+              color: "rgba(255,255,255,0.92)",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+            }}
+          >
             {String(serialNumber).padStart(2, "0")}
           </div>
         ) : null}
