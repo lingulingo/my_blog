@@ -64,13 +64,33 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <main className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">{children}</main>
             <footer className="relative mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
               <div
-                className="rounded-[1.5rem] px-5 py-4 text-sm leading-7 text-[var(--color-muted)]"
+                className="rounded-[1.75rem] px-6 py-6 sm:px-7"
                 style={{
                   border: "1px solid var(--color-line)",
-                  background: "var(--color-panel-soft)",
+                  background: "linear-gradient(180deg, var(--color-panel-soft), transparent)",
                 }}
               >
-                备注：灵寒谷用于展示个人原创文字作品与生活记录内容。
+                <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--color-gold)]">Linghan Valley</p>
+                    <p
+                      className="mt-3 text-3xl text-[var(--color-foreground)]"
+                      style={{ fontFamily: "var(--font-logo), var(--font-display), serif", letterSpacing: "0.08em" }}
+                    >
+                      灵寒谷
+                    </p>
+                  </div>
+                  <p className="max-w-2xl text-sm leading-7 text-[var(--color-muted)] md:text-right">
+                    灵寒谷用于展示个人原创文字作品与生活记录内容。
+                  </p>
+                </div>
+                <div
+                  className="mt-5 flex flex-col gap-2 pt-4 text-xs text-[var(--color-muted)] md:flex-row md:items-center md:justify-between"
+                  style={{ borderTop: "1px solid var(--color-line)" }}
+                >
+                  <p>{new Date().getFullYear()} {siteName()} 版权所有</p>
+                  <p>个人原创文字作品与生活记录</p>
+                </div>
               </div>
             </footer>
           </div>
