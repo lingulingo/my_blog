@@ -62,6 +62,17 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="pointer-events-none fixed inset-0 bg-[var(--page-glow)] transition-all duration-300" />
             <SiteHeader />
             <main className="relative mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">{children}</main>
+            <footer className="relative mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
+              <div
+                className="rounded-[1.5rem] px-5 py-4 text-sm leading-7 text-[var(--color-muted)]"
+                style={{
+                  border: "1px solid var(--color-line)",
+                  background: "var(--color-panel-soft)",
+                }}
+              >
+                备注：灵寒谷用于展示个人原创文字作品与生活记录内容。
+              </div>
+            </footer>
           </div>
         </Providers>
       </body>
