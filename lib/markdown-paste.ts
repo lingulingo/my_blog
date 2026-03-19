@@ -68,6 +68,78 @@ function sanitizeMarkdownText(value: string) {
   return value.replace(/\r\n/g, "\n").trim();
 }
 
+function isCodeLikeLine(line: string) {
+  const text = line.trim();
+  if (!text) return false;
+  if (/^```/.test(text)) return false;
+  if (/^[\[\]{}();.,:=+\-*/%<>!&|'"`\\]+$/.test(text)) return true;
+  if (/^(const|let|var|function|class|import|export|return|if|for|while|switch|case|try|catch)\b/.test(text)) return true;
+  if (/^(def|class|from|import|return|if|elif|else|for|while|try|except|with)\b/.test(text)) return true;
+  if (/^\s{2,}\S+/.test(line)) return true;
+  if (/(=>|===|!==|==|!=|&&|\|\||::|->|:=)/.test(text)) return true;
+  if (/[{}()[\];]/.test(text) && /[A-Za-z_$]/.test(text)) return true;
+  if (/^[A-Za-z_$][\w$]*\s*[:=]\s*.+/.test(text)) return true;
+  return false;
+}
+
+function detectCodeLanguage(blockText: string) {
+  if (/\b(def|import|from|elif|except|None|True|False)\b/.test(blockText)) return "python";
+  if (/\b(function|const|let|var|=>|console\.|document\.|window\.)\b/.test(blockText)) return "javascript";
+  if (/<\/?[a-z][^>]*>/i.test(blockText)) return "html";
+  if (/\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|JOIN)\b/i.test(blockText)) return "sql";
+  if (/\b(package|func|fmt\.|err != nil)\b/.test(blockText)) return "go";
+  return "";
+}
+
+function wrapCodeBlocks(markdown: string) {
+  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
+  const result: string[] = [];
+  let i = 0;
+  let inFence = false;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (/^```/.test(trimmed)) {
+      inFence = !inFence;
+      result.push(line);
+      i += 1;
+      continue;
+    }
+
+    if (!inFence && isCodeLikeLine(line)) {
+      let j = i;
+      const block: string[] = [];
+      while (j < lines.length) {
+        const current = lines[j];
+        if (!current.trim()) {
+          break;
+        }
+        if (!isCodeLikeLine(current)) {
+          break;
+        }
+        block.push(current);
+        j += 1;
+      }
+
+      if (block.length >= 2) {
+        const blockText = block.join("\n");
+        const lang = detectCodeLanguage(blockText);
+        result.push(`\`\`\`${lang}`);
+        result.push(...block);
+        result.push("```");
+        i = j;
+        continue;
+      }
+    }
+
+    result.push(line);
+    i += 1;
+  }
+
+  return result.join("\n");
+}
+
 function buildMarkdownImage(alt: string, url: string) {
   const safeAlt = alt.replace(/[\[\]]/g, "").trim() || "image";
   return `![${safeAlt}](${url})`;
@@ -159,8 +231,8 @@ export async function convertRichClipboardToMarkdown(options: ConvertOptions) {
   }
 
   if (!markdown) {
-    return sanitizeMarkdownText(options.plainText);
+    return wrapCodeBlocks(sanitizeMarkdownText(options.plainText));
   }
 
-  return markdown.replace(/\n{3,}/g, "\n\n").trim();
+  return wrapCodeBlocks(markdown.replace(/\n{3,}/g, "\n\n").trim());
 }

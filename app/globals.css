@@ -146,6 +146,37 @@ a {
   color: var(--color-gold);
 }
 
+.article-prose pre,
+.editor-content pre {
+  margin: 1.2rem 0;
+  overflow: auto;
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--button-ghost) 82%, transparent), color-mix(in srgb, var(--color-panel) 88%, transparent));
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.article-prose pre code,
+.editor-content pre code {
+  display: block;
+  color: var(--color-foreground);
+  font-size: 0.86rem;
+  line-height: 1.75;
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.article-prose :not(pre) > code,
+.editor-content :not(pre) > code {
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--button-ghost) 90%, transparent);
+  padding: 0.08rem 0.42rem;
+  color: var(--color-foreground);
+  font-size: 0.85em;
+}
+
 .article-prose ul,
 .editor-content ul {
   list-style: disc;
