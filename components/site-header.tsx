@@ -30,6 +30,9 @@ export async function SiteHeader() {
           <Link href="/tools" className="transition hover:text-[var(--color-foreground)]">
             工具库
           </Link>
+          <Link href="/study" className="transition hover:text-[var(--color-foreground)]">
+            笔记
+          </Link>
           <Link href="/rss.xml" className="transition hover:text-[var(--color-foreground)]">
             RSS
           </Link>

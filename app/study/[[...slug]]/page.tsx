@@ -1,0 +1,152 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { BookOpenText, Clock3, Files, FolderGit2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+import { StudySidebar } from "@/components/study/study-sidebar";
+import { formatDate, siteName, absoluteUrl } from "@/lib/utils";
+import { getStudyPageData } from "@/lib/study";
+
+export const dynamic = "force-dynamic";
+
+type StudyPageProps = {
+  params: Promise<{ slug?: string[] }>;
+};
+
+export async function generateMetadata({ params }: StudyPageProps): Promise<Metadata> {
+  const { slug = [] } = await params;
+  const { currentNote } = await getStudyPageData(slug);
+
+  const title = currentNote ? `${currentNote.label} | 学习笔记` : "学习笔记";
+  const description = currentNote
+    ? `来自 study 目录的学习笔记：${currentNote.label}`
+    : "按目录浏览与阅读学习笔记。";
+
+  return {
+    title,
+    description,
+    alternates: { canonical: slug.length ? `/study/${slug.map(encodeURIComponent).join("/")}` : "/study" },
+    openGraph: {
+      title: `${title} | ${siteName()}`,
+      description,
+      url: absoluteUrl(slug.length ? `/study/${slug.map(encodeURIComponent).join("/")}` : "/study"),
+    },
+  };
+}
+
+export default async function StudyPage({ params }: StudyPageProps) {
+  const { slug = [] } = await params;
+  const { tree, notes, currentNote } = await getStudyPageData(slug);
+
+  return (
+    <div className="space-y-8">
+      <section className="panel-surface overflow-hidden rounded-[2rem] p-6 sm:p-8">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <p className="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]">Study Notes</p>
+            <h1 className="mt-3 text-4xl text-[var(--color-cream)] sm:text-5xl">学习笔记</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--color-muted)]">
+              这里直接读取 study 目录生成笔记中心。左侧是分层目录，右侧是当前内容，整体按更适合长期阅读的学习面板来设计。
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { label: "笔记总数", value: notes.length, icon: Files },
+              { label: "目录分组", value: tree.length, icon: FolderGit2 },
+              { label: "当前模式", value: "双栏阅读", icon: BookOpenText },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-[1.4rem] p-4"
+                style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)" }}
+              >
+                <item.icon size={17} className="text-[var(--color-gold)]" />
+                <p className="mt-4 text-xs text-[var(--color-muted)]">{item.label}</p>
+                <p className="mt-2 text-xl font-semibold text-[var(--color-cream)]">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+        <StudySidebar tree={tree} activeSlug={currentNote?.slugSegments ?? []} totalNotes={notes.length} />
+
+        <section className="min-w-0 space-y-6">
+          {currentNote ? (
+            <>
+              <div className="panel-surface rounded-[1.75rem] p-6">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--color-muted)]">
+                  <Link href="/study" className="transition hover:text-[var(--color-foreground)]">
+                    学习笔记
+                  </Link>
+                  {currentNote.slugSegments.map((segment, index) => (
+                    <span key={`${segment}-${index}`} className="inline-flex items-center gap-3">
+                      <span>/</span>
+                      <span>{segment}</span>
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">{currentNote.extension}</p>
+                    <h2 className="mt-2 text-4xl text-[var(--color-cream)]">{currentNote.label}</h2>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-[var(--color-muted)]">
+                    <span
+                      className="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+                      style={{ border: "1px solid var(--color-line)", background: "var(--button-ghost)" }}
+                    >
+                      <Clock3 size={14} />
+                      更新于 {formatDate(currentNote.updatedAt)}
+                    </span>
+                    <span
+                      className="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+                      style={{ border: "1px solid var(--color-line)", background: "var(--button-ghost)" }}
+                    >
+                      <Files size={14} />
+                      {currentNote.lineCount} 行
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="panel-surface rounded-[1.9rem] p-6 sm:p-8">
+                {currentNote.isMarkdown ? (
+                  <div className="article-prose max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentNote.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm uppercase tracking-[0.28em] text-[var(--color-gold)]">Source Preview</p>
+                      <p className="mt-2 text-sm leading-7 text-[var(--color-muted)]">
+                        当前文件不是 Markdown，右侧按源码阅读模式展示，仍然会保持适合阅读的留白和代码块样式。
+                      </p>
+                    </div>
+                    <div className="article-prose max-w-none">
+                      <pre>
+                        <code>{currentNote.content}</code>
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="panel-surface rounded-[1.9rem] p-8">
+              <p className="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]">Study</p>
+              <h2 className="mt-3 text-3xl text-[var(--color-cream)]">还没有可展示的笔记</h2>
+              <p className="mt-4 text-sm leading-8 text-[var(--color-muted)]">
+                目前 study 目录下还没有可读取的笔记文件。你后续把 Markdown、Python、HTML、TXT 等文件放进去，这里就会自动展示。
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
