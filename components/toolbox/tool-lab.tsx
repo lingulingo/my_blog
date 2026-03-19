@@ -373,6 +373,7 @@ function runTool(tool: ToolId, input: string) {
 export function ToolLab() {
   const [activeTool, setActiveTool] = useState<ToolId>("url-decode");
   const [input, setInput] = useState("https%3A%2F%2Fwww.baidu.com%2Fs%3Fwd%3D%E4%BD%A0%E5%A5%BD");
+  const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">("idle");
 
   const toolMeta = tools.find((item) => item.id === activeTool)!;
 
@@ -387,6 +388,41 @@ export function ToolLab() {
       };
     }
   }, [activeTool, input]);
+
+  const copyResult = async () => {
+    const text = result.output || result.error || "";
+    if (!text) {
+      setCopyStatus("error");
+      return;
+    }
+
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "true");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        textarea.style.top = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (!copied) {
+          throw new Error("copy failed");
+        }
+      }
+
+      setCopyStatus("success");
+      window.setTimeout(() => setCopyStatus("idle"), 1600);
+    } catch {
+      setCopyStatus("error");
+      window.setTimeout(() => setCopyStatus("idle"), 2200);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -448,11 +484,11 @@ export function ToolLab() {
             <p className="text-sm text-[var(--color-muted)]">输出</p>
             <button
               type="button"
-              onClick={() => navigator.clipboard.writeText(result.output || result.error || "")}
+              onClick={copyResult}
               className="rounded-full px-3 py-1 text-xs text-[var(--color-muted)] transition hover:text-[var(--color-foreground)]"
               style={{ border: "1px solid var(--color-line)", background: "var(--button-ghost)" }}
             >
-              复制结果
+              {copyStatus === "success" ? "已复制" : copyStatus === "error" ? "复制失败" : "复制结果"}
             </button>
           </div>
 
