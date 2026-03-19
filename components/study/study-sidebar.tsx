@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { BookMarked, ChevronRight, FileCode2, FolderTree } from "lucide-react";
+import { ChevronRight, FileCode2, FolderTree } from "lucide-react";
 
 import { type StudyNode } from "@/lib/study";
 import { cn } from "@/lib/utils";
@@ -100,18 +100,7 @@ export function StudySidebar({ tree, activeSlug, totalNotes }: StudySidebarProps
         </div>
       </div>
 
-      <div
-        className="mt-4 rounded-[1.2rem] p-3 text-sm text-[var(--color-muted)]"
-        style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)" }}
-      >
-        <p className="flex items-center gap-2 text-[var(--color-foreground)]">
-          <BookMarked size={15} className="text-[var(--color-gold)]" />
-          基于 study 目录自动生成
-        </p>
-        <p className="mt-2 leading-7">左侧按文件夹组织目录，右侧展示笔记正文，后续你往目录里继续写就可以了。</p>
-      </div>
-
-      <div className="mt-5 max-h-[70vh] space-y-1 overflow-y-auto pr-1">{renderNodes(tree, activeSlug)}</div>
+      <div className="mt-5 max-h-[78vh] space-y-1 overflow-y-auto pr-1">{renderNodes(tree, activeSlug)}</div>
     </aside>
   );
 }

@@ -46,9 +46,6 @@ export default async function StudyPage({ params }: StudyPageProps) {
           <div>
             <p className="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]">Study Notes</p>
             <h1 className="mt-3 text-4xl text-[var(--color-cream)] sm:text-5xl">学习笔记</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--color-muted)]">
-              这里直接读取 study 目录生成笔记中心。左侧是分层目录，右侧是当前内容，整体按更适合长期阅读的学习面板来设计。
-            </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
@@ -119,18 +116,10 @@ export default async function StudyPage({ params }: StudyPageProps) {
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentNote.content}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-sm uppercase tracking-[0.28em] text-[var(--color-gold)]">Source Preview</p>
-                      <p className="mt-2 text-sm leading-7 text-[var(--color-muted)]">
-                        当前文件不是 Markdown，右侧按源码阅读模式展示，仍然会保持适合阅读的留白和代码块样式。
-                      </p>
-                    </div>
-                    <div className="article-prose max-w-none">
-                      <pre>
-                        <code>{currentNote.content}</code>
-                      </pre>
-                    </div>
+                  <div className="article-prose max-w-none">
+                    <pre>
+                      <code>{currentNote.content}</code>
+                    </pre>
                   </div>
                 )}
               </div>
@@ -139,9 +128,6 @@ export default async function StudyPage({ params }: StudyPageProps) {
             <div className="panel-surface rounded-[1.9rem] p-8">
               <p className="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]">Study</p>
               <h2 className="mt-3 text-3xl text-[var(--color-cream)]">还没有可展示的笔记</h2>
-              <p className="mt-4 text-sm leading-8 text-[var(--color-muted)]">
-                目前 study 目录下还没有可读取的笔记文件。你后续把 Markdown、Python、HTML、TXT 等文件放进去，这里就会自动展示。
-              </p>
             </div>
           )}
         </section>
