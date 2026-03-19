@@ -98,7 +98,11 @@ async function reverseGeocode(latitude: number, longitude: number) {
   };
 }
 
-export function WeatherClock() {
+type WeatherClockProps = {
+  compact?: boolean;
+};
+
+export function WeatherClock({ compact = false }: WeatherClockProps) {
   const [now, setNow] = useState(() => new Date());
   const [locationKey, setLocationKey] = useState<string>("auto");
   const [weather, setWeather] = useState<WeatherState>({
@@ -228,6 +232,45 @@ export function WeatherClock() {
       }).format(now),
     [now],
   );
+
+  if (compact) {
+    return (
+      <div
+        className="hidden items-center gap-2 rounded-full px-3 py-1.5 lg:flex"
+        style={{
+          border: "1px solid var(--color-line)",
+          background: "linear-gradient(135deg, rgba(212,177,106,0.12), rgba(255,255,255,0.04))",
+        }}
+      >
+        <span className="tabular-nums text-xs font-semibold text-[var(--color-cream)]">{timeText}</span>
+        <span className="text-xs text-[var(--color-muted)]">·</span>
+        <span className="text-sm leading-none">{weather.emoji}</span>
+        <span className="text-xs text-[var(--color-foreground)]">{weather.temperature}</span>
+        <span className="max-w-[72px] truncate text-xs text-[var(--color-muted)]">{weather.city}</span>
+        <select
+          value={locationKey}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            setLocationKey(nextValue);
+            window.localStorage.setItem(LOCATION_STORAGE_KEY, nextValue);
+          }}
+          className="max-w-[88px] rounded-full px-2 py-0.5 text-[11px] outline-none"
+          style={{
+            border: "1px solid var(--color-line)",
+            background: "rgba(255,255,255,0.06)",
+            color: "var(--color-foreground)",
+          }}
+          aria-label="选择天气定位"
+        >
+          {LOCATION_OPTIONS.map((option) => (
+            <option key={option.key} value={option.key}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
 
   return (
     <div

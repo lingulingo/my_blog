@@ -10,15 +10,18 @@ export async function SiteHeader() {
   const session = await getServerAuthSession();
 
   return (
-    <header className="sticky top-0 z-40 border-b backdrop-blur-xl lg:relative" style={{ borderColor: "var(--header-border)", background: "var(--header-bg)" }}>
+    <header className="sticky top-0 z-40 border-b backdrop-blur-xl" style={{ borderColor: "var(--header-border)", background: "var(--header-bg)" }}>
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="text-3xl text-[var(--color-cream)] transition hover:opacity-90 sm:text-4xl"
-          style={{ fontFamily: "var(--font-logo), var(--font-display), serif", letterSpacing: "0.08em" }}
-        >
-          {siteName()}
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="text-3xl text-[var(--color-cream)] transition hover:opacity-90 sm:text-4xl"
+            style={{ fontFamily: "var(--font-logo), var(--font-display), serif", letterSpacing: "0.08em" }}
+          >
+            {siteName()}
+          </Link>
+          <WeatherClock compact />
+        </div>
         <nav className="flex flex-wrap items-center justify-end gap-3 text-sm text-[var(--color-muted)] sm:gap-5">
           <ThemeToggle />
           <Link href="/posts" className="transition hover:text-[var(--color-foreground)]">
@@ -52,12 +55,6 @@ export async function SiteHeader() {
             </>
           )}
         </nav>
-      </div>
-      <div
-        className="pointer-events-auto absolute right-4 z-30 hidden xl:block xl:right-8"
-        style={{ top: "calc(100% + 12px)" }}
-      >
-        <WeatherClock />
       </div>
     </header>
   );
