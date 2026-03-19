@@ -390,15 +390,18 @@ export function ToolLab() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-gold)]">Toolbox</p>
-        <h1 className="mt-2 text-4xl text-[var(--color-cream)]">爬虫工具库</h1>
-        <p className="mt-3 text-sm text-[var(--color-muted)]">左侧选择工具，中间输入内容，右侧实时输出结果。</p>
+      <div className="rounded-[1.4rem] p-6" style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)" }}>
+        <p className="text-xs uppercase tracking-[0.35em] text-[var(--color-gold)]">Toolbox</p>
+        <h1 className="mt-2 text-4xl text-[var(--color-cream)]">工具库</h1>
+        <p className="mt-3 text-sm text-[var(--color-muted)]">左侧选工具，中间输入，右侧实时输出。格子固定，内容自动换行。</p>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[220px_1fr_1fr]">
-        <aside className="panel-surface rounded-[1.5rem] p-3">
-          <div className="space-y-1">
+      <div className="grid gap-5 xl:grid-cols-[240px_minmax(0,1fr)_minmax(0,1fr)]">
+        <aside
+          className="h-[620px] overflow-hidden rounded-[1.5rem] p-3"
+          style={{ border: "1px solid var(--color-line)", background: "linear-gradient(160deg, var(--color-panel), var(--color-panel-soft))" }}
+        >
+          <div className="h-full space-y-1 overflow-y-auto pr-1">
             {tools.map((tool) => (
               <button
                 key={tool.id}
@@ -407,10 +410,10 @@ export function ToolLab() {
                   setActiveTool(tool.id);
                   setInput(tool.placeholder);
                 }}
-                className={`w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+                className={`h-11 w-full rounded-xl px-3 py-2 text-left text-sm transition ${
                   activeTool === tool.id
-                    ? "bg-[var(--color-gold)] text-[var(--color-ink)]"
-                    : "text-[var(--color-muted)] hover:bg-[var(--color-panel-soft)] hover:text-[var(--color-foreground)]"
+                    ? "bg-[var(--color-gold)] text-[var(--color-ink)] shadow-[0_8px_20px_rgba(206,178,111,0.35)]"
+                    : "text-[var(--color-muted)] hover:bg-[var(--button-ghost)] hover:text-[var(--color-foreground)]"
                 }`}
               >
                 {tool.label}
@@ -419,13 +422,16 @@ export function ToolLab() {
           </div>
         </aside>
 
-        <section className="panel-surface rounded-[1.5rem] p-4">
+        <section
+          className="min-w-0 rounded-[1.5rem] p-4"
+          style={{ border: "1px solid var(--color-line)", background: "linear-gradient(160deg, var(--color-panel), var(--color-panel-soft))" }}
+        >
           <p className="mb-3 text-sm text-[var(--color-muted)]">输入（{toolMeta.label}）</p>
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder={toolMeta.placeholder}
-            className="min-h-[560px] w-full rounded-[1.1rem] px-4 py-3 font-mono text-sm outline-none"
+            className="h-[560px] w-full resize-none rounded-[1.1rem] px-4 py-3 font-mono text-sm leading-6 whitespace-pre-wrap break-all outline-none"
             style={{
               border: "1px solid var(--color-line)",
               background: "var(--button-ghost)",
@@ -434,14 +440,17 @@ export function ToolLab() {
           />
         </section>
 
-        <section className="panel-surface rounded-[1.5rem] p-4">
+        <section
+          className="min-w-0 rounded-[1.5rem] p-4"
+          style={{ border: "1px solid var(--color-line)", background: "linear-gradient(160deg, var(--color-panel), var(--color-panel-soft))" }}
+        >
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm text-[var(--color-muted)]">输出</p>
             <button
               type="button"
               onClick={() => navigator.clipboard.writeText(result.output || result.error || "")}
               className="rounded-full px-3 py-1 text-xs text-[var(--color-muted)] transition hover:text-[var(--color-foreground)]"
-              style={{ border: "1px solid var(--color-line)" }}
+              style={{ border: "1px solid var(--color-line)", background: "var(--button-ghost)" }}
             >
               复制结果
             </button>
@@ -456,7 +465,7 @@ export function ToolLab() {
             />
           ) : (
             <pre
-              className={`min-h-[560px] overflow-auto rounded-[1.1rem] px-4 py-3 font-mono text-sm whitespace-pre-wrap ${
+              className={`h-[560px] overflow-auto rounded-[1.1rem] px-4 py-3 font-mono text-sm leading-6 whitespace-pre-wrap break-all ${
                 result.error ? "text-red-400" : "text-[var(--color-foreground)]"
               }`}
               style={{ border: "1px solid var(--color-line)", background: "var(--button-ghost)" }}
