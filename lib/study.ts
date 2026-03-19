@@ -31,6 +31,7 @@ export type StudyFileNode = {
   extension: string;
   relativePath: string;
   slugSegments: string[];
+  displaySegments: string[];
 };
 
 export type StudyDirectoryNode = {
@@ -38,6 +39,7 @@ export type StudyDirectoryNode = {
   name: string;
   label: string;
   slugSegments: string[];
+  displaySegments: string[];
   children: StudyNode[];
 };
 
@@ -93,6 +95,7 @@ async function buildTree(currentDirectory: string, parentSegments: string[] = []
           name: entry.name,
           label: formatStudyLabel(entry.name),
           slugSegments,
+          displaySegments: [...parentSegments.map(formatStudyLabel), formatStudyLabel(entry.name)],
           children,
         });
       }
@@ -113,7 +116,8 @@ async function buildTree(currentDirectory: string, parentSegments: string[] = []
       label: formatStudyLabel(entry.name),
       extension: ext,
       relativePath,
-      slugSegments: [...parentSegments, basename],
+      slugSegments: [...parentSegments, entry.name],
+      displaySegments: [...parentSegments.map(formatStudyLabel), formatStudyLabel(entry.name)],
     });
   }
 

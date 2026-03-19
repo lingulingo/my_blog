@@ -78,7 +78,7 @@ export default async function StudyPage({ params }: StudyPageProps) {
                   <Link href="/study" className="transition hover:text-[var(--color-foreground)]">
                     学习笔记
                   </Link>
-                  {currentNote.slugSegments.map((segment, index) => (
+                  {currentNote.displaySegments.map((segment, index) => (
                     <span key={`${segment}-${index}`} className="inline-flex items-center gap-3">
                       <span>/</span>
                       <span>{segment}</span>
