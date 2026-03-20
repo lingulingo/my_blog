@@ -195,10 +195,11 @@ export async function getStudyNoteDetail(slugSegments?: string[]) {
 
 export async function getStudyPageData(slugSegments?: string[]) {
   const { tree, notes } = await getStudyIndex();
-  const currentNote =
+  const matchedNote =
     slugSegments && slugSegments.length > 0
       ? notes.find((note) => note.slugSegments.join("/") === slugSegments.join("/"))
-      : notes[0];
+      : null;
+  const currentNote = matchedNote ?? notes[0];
 
   if (!currentNote) {
     return {
