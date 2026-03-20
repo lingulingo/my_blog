@@ -60,6 +60,43 @@ type StudyIndex = {
 const STUDY_CACHE_TTL_MS = 15_000;
 let studyIndexCache: { value: StudyIndex; expiresAt: number } | null = null;
 
+function decodeStudyFile(buffer: Buffer) {
+  if (buffer.length >= 3 && buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf) {
+    return buffer.subarray(3).toString("utf8");
+  }
+
+  if (buffer.length >= 2 && buffer[0] === 0xff && buffer[1] === 0xfe) {
+    return new TextDecoder("utf-16le").decode(buffer.subarray(2));
+  }
+
+  if (buffer.length >= 2 && buffer[0] === 0xfe && buffer[1] === 0xff) {
+    const swapped = Buffer.from(buffer.subarray(2));
+    for (let index = 0; index + 1 < swapped.length; index += 2) {
+      const current = swapped[index];
+      swapped[index] = swapped[index + 1];
+      swapped[index + 1] = current;
+    }
+    return new TextDecoder("utf-16le").decode(swapped);
+  }
+
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+  } catch {
+    return new TextDecoder("gb18030").decode(buffer);
+  }
+}
+
+async function readStudyNote(relativePath: string) {
+  const absolutePath = path.join(STUDY_ROOT, relativePath);
+  const [buffer, stats] = await Promise.all([fs.readFile(absolutePath), fs.stat(absolutePath)]);
+  const content = decodeStudyFile(buffer);
+
+  return {
+    content,
+    stats,
+  };
+}
+
 function formatStudyLabel(rawName: string) {
   const baseName = rawName.replace(path.extname(rawName), "");
   const cleaned = baseName
@@ -181,8 +218,7 @@ export async function getStudyNoteDetail(slugSegments?: string[]) {
     return null;
   }
 
-  const absolutePath = path.join(STUDY_ROOT, selected.relativePath);
-  const [content, stats] = await Promise.all([fs.readFile(absolutePath, "utf8"), fs.stat(absolutePath)]);
+  const { content, stats } = await readStudyNote(selected.relativePath);
 
   return {
     ...selected,
@@ -209,8 +245,7 @@ export async function getStudyPageData(slugSegments?: string[]) {
     };
   }
 
-  const absolutePath = path.join(STUDY_ROOT, currentNote.relativePath);
-  const [content, stats] = await Promise.all([fs.readFile(absolutePath, "utf8"), fs.stat(absolutePath)]);
+  const { content, stats } = await readStudyNote(currentNote.relativePath);
 
   const detail: StudyNoteDetail = {
     ...currentNote,
