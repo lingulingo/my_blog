@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { BookOpenText, Clock3, Files, FolderGit2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -38,6 +39,10 @@ export async function generateMetadata({ params }: StudyPageProps): Promise<Meta
 export default async function StudyPage({ params }: StudyPageProps) {
   const { slug = [] } = await params;
   const { tree, notes, currentNote } = await getStudyPageData(slug);
+
+  if (slug.length === 0 && currentNote) {
+    redirect(`/study/${currentNote.slugSegments.map(encodeURIComponent).join("/")}`);
+  }
 
   return (
     <div className="space-y-8">
@@ -110,13 +115,13 @@ export default async function StudyPage({ params }: StudyPageProps) {
                 </div>
               </div>
 
-              <div className="panel-surface rounded-[1.9rem] p-6 sm:p-8">
+              <div className="panel-surface study-content rounded-[1.9rem] p-6 sm:p-8">
                 {currentNote.isMarkdown ? (
-                  <div className="article-prose max-w-none">
+                  <div className="article-prose study-markdown max-w-none">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentNote.content}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="article-prose max-w-none">
+                  <div className="article-prose study-code max-w-none">
                     <pre>
                       <code>{currentNote.content}</code>
                     </pre>

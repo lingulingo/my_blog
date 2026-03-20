@@ -52,6 +52,14 @@ export type StudyNoteDetail = StudyFileNode & {
   isMarkdown: boolean;
 };
 
+type StudyIndex = {
+  tree: StudyNode[];
+  notes: StudyFileNode[];
+};
+
+const STUDY_CACHE_TTL_MS = 15_000;
+let studyIndexCache: { value: StudyIndex; expiresAt: number } | null = null;
+
 function formatStudyLabel(rawName: string) {
   const baseName = rawName.replace(path.extname(rawName), "");
   const cleaned = baseName
@@ -138,21 +146,32 @@ function flattenNotes(nodes: StudyNode[]): StudyFileNode[] {
   });
 }
 
-export async function getStudyTree() {
+async function getStudyIndex(): Promise<StudyIndex> {
+  const now = Date.now();
+  if (studyIndexCache && studyIndexCache.expiresAt > now) {
+    return studyIndexCache.value;
+  }
+
   try {
-    return await buildTree(STUDY_ROOT);
+    const tree = await buildTree(STUDY_ROOT);
+    const value = { tree, notes: flattenNotes(tree) };
+    studyIndexCache = { value, expiresAt: now + STUDY_CACHE_TTL_MS };
+    return value;
   } catch {
-    return [];
+    return { tree: [], notes: [] };
   }
 }
 
+export async function getStudyTree() {
+  return (await getStudyIndex()).tree;
+}
+
 export async function getStudyNotes() {
-  const tree = await getStudyTree();
-  return flattenNotes(tree);
+  return (await getStudyIndex()).notes;
 }
 
 export async function getStudyNoteDetail(slugSegments?: string[]) {
-  const notes = await getStudyNotes();
+  const { notes } = await getStudyIndex();
   const selected =
     slugSegments && slugSegments.length > 0
       ? notes.find((note) => note.slugSegments.join("/") === slugSegments.join("/"))
@@ -175,8 +194,7 @@ export async function getStudyNoteDetail(slugSegments?: string[]) {
 }
 
 export async function getStudyPageData(slugSegments?: string[]) {
-  const tree = await getStudyTree();
-  const notes = flattenNotes(tree);
+  const { tree, notes } = await getStudyIndex();
   const currentNote =
     slugSegments && slugSegments.length > 0
       ? notes.find((note) => note.slugSegments.join("/") === slugSegments.join("/"))

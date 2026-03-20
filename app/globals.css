@@ -190,6 +190,116 @@ a {
   padding-left: 1.5rem;
 }
 
+.study-content {
+  min-height: 60vh;
+}
+
+.study-markdown {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.study-markdown > * + * {
+  margin-top: 1.15rem;
+}
+
+.study-markdown h1,
+.study-markdown h2,
+.study-markdown h3,
+.study-markdown h4 {
+  margin-top: 2.2rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+
+.study-markdown p,
+.study-markdown li {
+  font-size: 1rem;
+  line-height: 2;
+}
+
+.study-markdown blockquote {
+  margin: 1.4rem 0;
+  border-left: 3px solid rgba(212, 177, 106, 0.42);
+  border-radius: 0 1rem 1rem 0;
+  background: color-mix(in srgb, var(--button-ghost) 88%, transparent);
+  padding: 1rem 1.1rem 1rem 1.2rem;
+}
+
+.study-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--color-line);
+}
+
+.study-markdown th,
+.study-markdown td {
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+}
+
+.study-markdown th {
+  color: var(--color-foreground);
+  background: color-mix(in srgb, var(--button-ghost) 92%, transparent);
+}
+
+.study-markdown img {
+  display: block;
+  max-width: 100%;
+  border-radius: 1rem;
+  margin: 1.25rem auto;
+}
+
+.study-code pre {
+  margin: 0;
+  min-height: 52vh;
+  white-space: pre;
+  overflow: auto;
+}
+
+.study-code pre code {
+  font-size: 0.92rem;
+  line-height: 1.85;
+}
+
+.study-loading-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--button-ghost) 88%, transparent);
+}
+
+.study-loading-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  animation: study-shimmer 1.5s ease-in-out infinite;
+}
+
+.study-loading-pulse {
+  animation: study-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes study-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes study-pulse {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .editor-content .ProseMirror p.is-editor-empty:first-child::before {
   color: color-mix(in srgb, var(--color-muted) 70%, transparent);
   content: attr(data-placeholder);
