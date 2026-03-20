@@ -14,30 +14,45 @@ type StudyPageProps = {
   params: Promise<{ slug?: string[] }>;
 };
 
+function normalizeStudySlug(slug: string[]) {
+  return slug.map((segment) => {
+    try {
+      return decodeURIComponent(segment);
+    } catch {
+      return segment;
+    }
+  });
+}
+
 export async function generateMetadata({ params }: StudyPageProps): Promise<Metadata> {
   const { slug = [] } = await params;
-  const { currentNote } = await getStudyPageData(slug);
+  const normalizedSlug = normalizeStudySlug(slug);
+  const { currentNote } = await getStudyPageData(normalizedSlug);
 
   const title = currentNote ? `${currentNote.label} | 学习笔记` : "学习笔记";
   const description = currentNote
     ? `来自 study 目录的学习笔记：${currentNote.label}`
     : "按目录浏览与阅读学习笔记。";
+  const canonicalPath = normalizedSlug.length
+    ? `/study/${normalizedSlug.map(encodeURIComponent).join("/")}`
+    : "/study";
 
   return {
     title,
     description,
-    alternates: { canonical: slug.length ? `/study/${slug.map(encodeURIComponent).join("/")}` : "/study" },
+    alternates: { canonical: canonicalPath },
     openGraph: {
       title: `${title} | ${siteName()}`,
       description,
-      url: absoluteUrl(slug.length ? `/study/${slug.map(encodeURIComponent).join("/")}` : "/study"),
+      url: absoluteUrl(canonicalPath),
     },
   };
 }
 
 export default async function StudyPage({ params }: StudyPageProps) {
   const { slug = [] } = await params;
-  const { tree, notes, currentNote } = await getStudyPageData(slug);
+  const normalizedSlug = normalizeStudySlug(slug);
+  const { tree, notes, currentNote } = await getStudyPageData(normalizedSlug);
 
   return (
     <div className="space-y-8">
