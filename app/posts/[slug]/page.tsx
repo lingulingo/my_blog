@@ -10,6 +10,7 @@ import { getServerAuthSession } from "@/auth";
 import { CommentSection } from "@/components/comment-section";
 import { PostVisitTracker } from "@/components/post-visit-tracker";
 import { ReactionButton } from "@/components/reaction-button";
+import { normalizeMarkdownForDisplay } from "@/lib/markdown";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, formatDate, getHeatScore, resolveMediaUrl, siteName, tagList } from "@/lib/utils";
 
@@ -73,6 +74,8 @@ export default async function PostDetailPage({ params }: PageProps) {
     ? post.reactions.some((reaction) => reaction.userId === session.user.id)
     : false;
   const coverImageUrl = resolveMediaUrl(post.coverImage);
+  const normalizedMarkdownContent =
+    post.contentFormat === "MARKDOWN" ? normalizeMarkdownForDisplay(post.content) : post.content;
 
   return (
     <div className="space-y-8">
@@ -130,7 +133,7 @@ export default async function PostDetailPage({ params }: PageProps) {
       <section className="panel-surface rounded-[2rem] p-6 sm:p-8">
         {post.contentFormat === "MARKDOWN" ? (
           <div className="article-prose max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{normalizedMarkdownContent}</ReactMarkdown>
           </div>
         ) : (
           <div className="article-prose max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />

@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { StudySidebar } from "@/components/study/study-sidebar";
+import { normalizeMarkdownForDisplay } from "@/lib/markdown";
 import { formatDate, siteName, absoluteUrl } from "@/lib/utils";
 import { getStudyPageData } from "@/lib/study";
 
@@ -53,6 +54,8 @@ export default async function StudyPage({ params }: StudyPageProps) {
   const { slug = [] } = await params;
   const normalizedSlug = normalizeStudySlug(slug);
   const { tree, notes, currentNote } = await getStudyPageData(normalizedSlug);
+  const normalizedContent =
+    currentNote?.isMarkdown && currentNote.content ? normalizeMarkdownForDisplay(currentNote.content) : currentNote?.content;
 
   return (
     <div className="space-y-8">
@@ -128,7 +131,7 @@ export default async function StudyPage({ params }: StudyPageProps) {
               <div className="panel-surface study-content rounded-[1.9rem] p-6 sm:p-8">
                 {currentNote.isMarkdown ? (
                   <div className="article-prose study-markdown max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{currentNote.content}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{normalizedContent}</ReactMarkdown>
                   </div>
                 ) : (
                   <div className="article-prose study-code max-w-none">
