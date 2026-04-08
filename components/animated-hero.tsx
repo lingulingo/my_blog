@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-/** 首页主视觉轮播名句，约 2.8 秒切换 */
-const HERO_ROTATION_MS = 2800;
+/** 首页主视觉轮播：每条完整可读时间（含柔和叠化，实际叠化约 0.85s） */
+const HERO_ROTATION_MS = 4500;
+
+const heroCrossfade = {
+  duration: 0.85,
+  ease: [0.33, 0.86, 0.36, 1] as const,
+};
 
 const HERO_LINES = [
   "三更灯火五更鸡，正是男儿读书时。",
@@ -42,13 +47,17 @@ const HERO_LINES = [
 
 export function AnimatedHero() {
   const [lineIndex, setLineIndex] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      return;
+    }
     const id = window.setInterval(() => {
       setLineIndex((i) => (i + 1) % HERO_LINES.length);
     }, HERO_ROTATION_MS);
     return () => window.clearInterval(id);
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <section className="hero-surface relative overflow-hidden rounded-[2rem] px-6 py-16 shadow-2xl shadow-black/10 sm:px-10 lg:px-14" style={{ border: "1px solid var(--color-line)" }}>
@@ -62,22 +71,33 @@ export function AnimatedHero() {
         <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[var(--color-gold)]">Linghan Valley Journal</p>
 
         <div
-          className="relative min-h-[9.5rem] sm:min-h-[11rem] md:min-h-[10.5rem]"
+          className="relative min-h-[10.5rem] sm:min-h-[12rem] md:min-h-[11.5rem]"
           aria-live="polite"
           aria-atomic="true"
         >
-          <AnimatePresence mode="wait">
-            <motion.h1
-              key={lineIndex}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-3xl text-4xl font-semibold leading-snug text-[var(--color-cream)] sm:text-5xl sm:leading-tight lg:text-6xl"
-            >
+          {prefersReducedMotion ? (
+            <h1 className="max-w-3xl text-4xl font-semibold leading-snug text-[var(--color-cream)] sm:text-5xl sm:leading-tight lg:text-6xl">
               {HERO_LINES[lineIndex]}
-            </motion.h1>
-          </AnimatePresence>
+            </h1>
+          ) : (
+            <AnimatePresence initial={false}>
+              <motion.h1
+                key={lineIndex}
+                className="absolute left-0 top-0 max-w-3xl text-4xl font-semibold leading-snug text-[var(--color-cream)] sm:text-5xl sm:leading-tight lg:text-6xl"
+                initial={{ opacity: 0, y: 10, scale: 0.992 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.996 }}
+                transition={{
+                  opacity: heroCrossfade,
+                  y: { ...heroCrossfade, duration: 0.75 },
+                  scale: { ...heroCrossfade, duration: 0.75 },
+                }}
+                style={{ willChange: "opacity, transform" }}
+              >
+                {HERO_LINES[lineIndex]}
+              </motion.h1>
+            </AnimatePresence>
+          )}
         </div>
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
