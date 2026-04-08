@@ -15,10 +15,11 @@ export function AnimatedHero() {
       >
         <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[var(--color-gold)]">Linghan Valley Journal</p>
         <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-[var(--color-cream)] sm:text-6xl">
-          在灵寒谷里，记录风、霜、思绪与每一篇值得留下的文字。
+          三更灯火五更鸡，正是男儿读书时。
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--color-muted)]">
-          这里适合写技术、写生活、写观察，也能用清晰的数据看见哪些内容真正被读到、被喜欢、被记住。
+          黑发不知勤学早，白首方悔读书迟。
+          <span className="mt-3 block text-base text-[var(--color-muted)]/85">——颜真卿《劝学》</span>
         </p>
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <Link
