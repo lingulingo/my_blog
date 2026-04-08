@@ -4,6 +4,7 @@ import { BookOpenText, Clock3, Files, FolderGit2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import { markdownComponents } from "@/components/markdown-components";
 import { StudySidebar } from "@/components/study/study-sidebar";
 import { normalizeMarkdownForDisplay } from "@/lib/markdown";
 import { formatDate, siteName, absoluteUrl } from "@/lib/utils";
@@ -131,7 +132,9 @@ export default async function StudyPage({ params }: StudyPageProps) {
               <div className="panel-surface study-content rounded-[1.9rem] p-6 sm:p-8">
                 {currentNote.isMarkdown ? (
                   <div className="article-prose study-markdown max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{normalizedContent}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {normalizedContent}
+                    </ReactMarkdown>
                   </div>
                 ) : (
                   <div className="article-prose study-code max-w-none">

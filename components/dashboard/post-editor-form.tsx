@@ -4,8 +4,12 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ImagePlus } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
+import { markdownComponents } from "@/components/markdown-components";
 import { RichTextEditor } from "@/components/editor/rich-text-editor";
+import { normalizeMarkdownForDisplay } from "@/lib/markdown";
 import { convertRichClipboardToMarkdown } from "@/lib/markdown-paste";
 import { resolveMediaUrl } from "@/lib/utils";
 
@@ -274,17 +278,39 @@ export function PostEditorForm({ post, categories }: EditorFormProps) {
           <RichTextEditor name="content" value={content} onChange={setContent} />
         ) : (
           <div className="panel-surface rounded-[1.75rem] p-4">
-            <textarea
-              ref={markdownTextareaRef}
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              onPaste={(event) => {
-                void handleMarkdownPaste(event);
-              }}
-              placeholder="# 在这里写 Markdown\n\n支持标题、列表、代码块、表格、链接等常用格式。"
-              className="min-h-[420px] w-full rounded-[1.25rem] px-5 py-4 font-mono text-sm outline-none"
-              style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)", color: "var(--color-foreground)" }}
-            />
+            <div className="grid gap-5 lg:grid-cols-2">
+              <div className="min-w-0 space-y-2">
+                <p className="text-xs uppercase tracking-[0.22em] text-[var(--color-muted)]">编辑</p>
+                <textarea
+                  ref={markdownTextareaRef}
+                  value={content}
+                  onChange={(event) => setContent(event.target.value)}
+                  onPaste={(event) => {
+                    void handleMarkdownPaste(event);
+                  }}
+                  placeholder="# 在这里写 Markdown\n\n支持标题、列表、代码块、表格、链接等常用格式。"
+                  className="min-h-[min(70vh,520px)] w-full rounded-[1.25rem] px-5 py-4 font-mono text-sm leading-relaxed outline-none focus:border-[var(--color-gold)]"
+                  style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)", color: "var(--color-foreground)" }}
+                />
+              </div>
+              <div className="min-w-0 space-y-2">
+                <p className="text-xs uppercase tracking-[0.22em] text-[var(--color-muted)]">预览</p>
+                <div
+                  className="editor-markdown-preview max-h-[min(70vh,520px)] overflow-y-auto overflow-x-hidden rounded-[1.25rem] px-4 py-4"
+                  style={{ border: "1px solid var(--color-line)", background: "var(--color-panel-soft)" }}
+                >
+                  <div className="article-prose max-w-none text-sm">
+                    {content.trim() ? (
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                        {normalizeMarkdownForDisplay(content)}
+                      </ReactMarkdown>
+                    ) : (
+                      <p className="text-sm leading-relaxed text-[var(--color-muted)]">左侧输入 Markdown 后，此处实时预览表格与排版效果。</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
             {pasteMessage ? <p className="mt-3 text-sm text-[var(--color-muted)]">{pasteMessage}</p> : null}
           </div>
         )}

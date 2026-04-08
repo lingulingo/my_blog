@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 
 import { getServerAuthSession } from "@/auth";
 import { CommentSection } from "@/components/comment-section";
+import { markdownComponents } from "@/components/markdown-components";
 import { PostVisitTracker } from "@/components/post-visit-tracker";
 import { ReactionButton } from "@/components/reaction-button";
 import { normalizeMarkdownForDisplay } from "@/lib/markdown";
@@ -133,7 +134,9 @@ export default async function PostDetailPage({ params }: PageProps) {
       <section className="panel-surface rounded-[2rem] p-6 sm:p-8">
         {post.contentFormat === "MARKDOWN" ? (
           <div className="article-prose max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{normalizedMarkdownContent}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+              {normalizedMarkdownContent}
+            </ReactMarkdown>
           </div>
         ) : (
           <div className="article-prose max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />

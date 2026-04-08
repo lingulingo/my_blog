@@ -190,6 +190,67 @@ a {
   padding-left: 1.5rem;
 }
 
+.markdown-table-wrap {
+  margin: 1.35rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 1rem;
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-panel-soft) 88%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-foreground) 4%, transparent);
+}
+
+.markdown-table-wrap table {
+  width: 100%;
+  min-width: min(100%, 20rem);
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.markdown-table-wrap thead {
+  background: color-mix(in srgb, var(--button-ghost) 94%, transparent);
+}
+
+.markdown-table-wrap th,
+.markdown-table-wrap td {
+  border-bottom: 1px solid var(--color-line);
+  border-right: 1px solid color-mix(in srgb, var(--color-line) 65%, transparent);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown-table-wrap th:last-child,
+.markdown-table-wrap td:last-child {
+  border-right: none;
+}
+
+.markdown-table-wrap th {
+  color: var(--color-foreground);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.markdown-table-wrap td {
+  color: var(--color-muted);
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.markdown-table-wrap tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--button-ghost) 42%, transparent);
+}
+
+.markdown-table-wrap tbody tr:last-child td,
+.markdown-table-wrap tbody tr:last-child th {
+  border-bottom: none;
+}
+
+.editor-markdown-preview .markdown-table-wrap td {
+  font-size: 0.85rem;
+}
+
 .study-content {
   min-height: 60vh;
 }
@@ -224,26 +285,6 @@ a {
   border-radius: 0 1rem 1rem 0;
   background: color-mix(in srgb, var(--button-ghost) 88%, transparent);
   padding: 1rem 1.1rem 1rem 1.2rem;
-}
-
-.study-markdown table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 1rem;
-  border: 1px solid var(--color-line);
-}
-
-.study-markdown th,
-.study-markdown td {
-  border-bottom: 1px solid var(--color-line);
-  padding: 0.8rem 0.95rem;
-  text-align: left;
-}
-
-.study-markdown th {
-  color: var(--color-foreground);
-  background: color-mix(in srgb, var(--button-ghost) 92%, transparent);
 }
 
 .study-markdown img {
