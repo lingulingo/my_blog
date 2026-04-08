@@ -64,10 +64,31 @@ export default async function Home({ searchParams }: HomeProps) {
             查看全部文章
           </Link>
         </div>
-        <div className="grid gap-6 lg:grid-cols-3">
-          {featuredPosts.map((post, index) => (
-            <PostCard key={post.id} post={post} serialNumber={index + 1} />
-          ))}
+        <div className="space-y-5">
+          {featuredPosts[0] ? (
+            <PostCard
+              key={featuredPosts[0].id}
+              post={featuredPosts[0]}
+              serialNumber={1}
+              variant="lead"
+              maxTags={2}
+              excerptLines={2}
+            />
+          ) : null}
+          {featuredPosts.length > 1 ? (
+            <div className="grid gap-5 sm:grid-cols-2">
+              {featuredPosts.slice(1).map((post, index) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  serialNumber={index + 2}
+                  variant="compact"
+                  maxTags={2}
+                  excerptLines={2}
+                />
+              ))}
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -77,9 +98,16 @@ export default async function Home({ searchParams }: HomeProps) {
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--color-gold)]">Latest stories</p>
             <h2 className="mt-2 text-4xl text-[var(--color-cream)]">最新发布</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="flex flex-col gap-4">
             {latestPosts.map((post, index) => (
-              <PostCard key={post.id} post={post} serialNumber={index + 1} />
+              <PostCard
+                key={post.id}
+                post={post}
+                serialNumber={index + 1}
+                variant="horizontal"
+                maxTags={2}
+                excerptLines={2}
+              />
             ))}
           </div>
         </div>
