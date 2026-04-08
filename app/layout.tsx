@@ -91,6 +91,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   <p>{new Date().getFullYear()} {siteName()} 版权所有</p>
                   <p>个人原创文字作品与生活记录</p>
                 </div>
+                <p className="mt-4 text-center text-[11px] leading-relaxed text-[var(--color-muted)]">
+                  <a
+                    href="https://beian.miit.gov.cn/"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="transition hover:text-[var(--color-foreground)]"
+                  >
+                    沪ICP备2026011212号
+                  </a>
+                </p>
               </div>
             </footer>
           </div>
